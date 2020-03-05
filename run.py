@@ -29,7 +29,10 @@ def randcircuit_f(args):
 
 # Collect benchmarking parameters
 N_CPU = multiproc.available_cpus()
-cpu_iter = list(range(1, N_CPU + 1))
+# Include a 'control' run at the end, which doesn't implement Pool at all
+# and reflects the time it would take to just run NUM_CIRCUITS_TO_RUN in
+# serial using automatic resource allocation.
+cpu_iter = list(range(1, N_CPU + 1)) + [None]
 print("Iterating CPU count over the following values:\n{}".format(cpu_iter))
 qubit_iter = list(range(1, N_QUBITS_MAX))
 print(
@@ -41,7 +44,8 @@ print("Running random circuits for {} trials".format(N_TRIALS))
 results = np.zeros((len(cpu_iter), len(qubit_iter), N_TRIALS),
                    dtype=np.float64)
 for i, n_cpu in enumerate(cpu_iter):
-    pool = multiproc.MultiprocContext(n_cpus=n_cpu).pool()
+    if n_cpu is not None:
+        pool = multiproc.MultiprocContext(n_cpus=n_cpu).pool()
     for j, n_qubits in enumerate(qubit_iter):
         for k, trial in enumerate(trials_iter):
 
@@ -50,7 +54,11 @@ for i, n_cpu in enumerate(cpu_iter):
             circuit_specs = [(n_qubits, CIRCUIT_DEPTH, OP_DENSITY, SEED + el)
                              for el in range(NUM_CIRCUITS_TO_RUN)]
             t0 = time.perf_counter()
-            pool.map(randcircuit_f, circuit_specs)
+            if n_cpu is not None:
+                pool.map(randcircuit_f, circuit_specs)
+            else:
+                for package in circuit_specs:
+                    randcircuit_f(package)
             results[i, j, k] = time.perf_counter() - t0
     pool.close()
 
