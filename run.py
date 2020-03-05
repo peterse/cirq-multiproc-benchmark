@@ -8,10 +8,10 @@ import multiproc
 
 SEED = 104010  # coins and dice.
 CIRCUIT_DEPTH = 100
-NUM_CIRCUITS_TO_RUN = 50
+NUM_CIRCUITS_TO_RUN = 100
 N_TRIALS = 10
 OP_DENSITY = 0.99
-N_QUBITS_MAX = 6
+N_QUBITS_MAX = 18
 
 # Query true processor availability
 if not multiproc.MultiprocContext().can_resize:

@@ -56,7 +56,7 @@ def main(target):
     ax.set_xlabel("Number of qubits")
     ax.set_xticks(qubit_iter)
     ax.set_ylabel("Time (s)")
-    ax.set_ylim((0, ax.get_ylim()[1]))
+    ax.set_yscale("log")
     ax.set_title(
         f"Time to run a batch of {NUM_CIRCUITS_TO_RUN} circuits\n {N_TRIALS} trials of batches"
     )
