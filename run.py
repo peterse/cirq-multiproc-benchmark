@@ -11,7 +11,8 @@ CIRCUIT_DEPTH = 100
 NUM_CIRCUITS_TO_RUN = 100
 N_TRIALS = 10
 OP_DENSITY = 0.99
-N_QUBITS_MAX = 18
+N_QUBITS_MAX = 10
+SIMULATOR = cirq.DensityMatrixSimulator()
 
 # Query true processor availability
 if not multiproc.MultiprocContext().can_resize:
@@ -22,7 +23,8 @@ if not multiproc.MultiprocContext().can_resize:
 # This is because the function passed to workers must be piclable.
 def randcircuit_f(args):
     n, d, ops, seed = args
-    cirq.Simulator().simulate(
+    global SIMULATOR
+    SIMULATOR.simulate(
         cirq.testing.random_circuit(n, d, ops, random_state=seed))
     return
 
